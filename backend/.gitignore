@@ -1,0 +1,12 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Folder & File inside
+**/.internish/
+**/.env
+
+# Python Environments
+**/.venv/
+**/__pycache__/
+
+# IDE & editor
+**/.idea/
