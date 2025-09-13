@@ -14,8 +14,8 @@ DATABASE_URL = f"postgresql+psycopg2://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATA
 engine = create_engine(DATABASE_URL)
 with engine.begin() as conn:
     conn.exec_driver_sql('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
-    conn.exec_driver_sql('CREATE EXTENSION IF NOT EXISTS citext;')
-    
+    conn.exec_driver_sql("CREATE EXTENSION IF NOT EXISTS citext;")
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
