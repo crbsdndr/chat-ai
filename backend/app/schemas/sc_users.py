@@ -11,3 +11,8 @@ class SignUp(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8)
     role: str = Field(default=UserRole.user, pattern="^(user|admin|superadmin)$")
+
+class LogIn(BaseModel):
+    username: str | None
+    email: str | None
+    password: str = Field(min_length=8)
