@@ -8,29 +8,30 @@ from app.schemas import sc_users
 
 router = APIRouter()
 
+
 @router.post("/signup/")
 def signup(payload: sc_users.SignUp):
-    try:
-        new_auth = s_user.Auth(
-            session=c_database.SessionLocal(),
-            model=c_models.User
-        )
-        
-        new_auth.handle_signup(payload=payload)
-        return {"detail": "Signup sucessful"}
-    
-    except HTTPException:
-        raise
+    new_auth = s_user.Auth(session=c_database.SessionLocal(), model=c_models.User)
+    result = new_auth.insert_new(payload=payload)
 
-    except Exception as ex:
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(ex)}")
+    if result:
+        return {"detail": "Sign Up sucessful"}
+    else:
+        return {"detail": "How did you get here? Contact Us!"}
+
 
 @router.post("/login/")
 def login(payload: sc_users.LogIn):
-    try:
-        if payload.username and payload.email:
-            return HTTPException(status_code=400, detail="Please fill in one of the fields (username or email)")
+    if not (bool(payload.email) ^ bool(payload.username)):
+        return HTTPException(
+            status_code=400,
+            detail="Please fill in one of the fields (username or email)",
+        )
 
+    new_auth = s_user.Auth(session=c_database.SessionLocal(), model=c_models.User)
+    result = new_auth.handle_login(payload=payload)
 
-    except Exception as ex:
-        HTTPException(status_code=400, detail=str(ex))
+    if result:
+        return {"detail": "Log In sucessful"}
+    else:
+        return {"detail": "How did you get here? Contact Us!"}

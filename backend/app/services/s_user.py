@@ -5,7 +5,7 @@ from typing import Union
 from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
 
-class Auth:
+class UserService:
     def __init__(self, session, model):
         self.session = session
         self.model = model
@@ -23,7 +23,7 @@ class Auth:
 
         return result
     
-    def handle_signup(self, payload: sc_users.SignUp) -> None:
+    def insert_new(self, payload: sc_users.SignUp) -> bool:
         try:
             full_name: str = payload.full_name
             username: str = payload.username
@@ -58,5 +58,40 @@ class Auth:
             self.session.rollback()
             raise HTTPException(status_code=500, detail=f"Internal server error: {str(ex)}")
 
+        finally:
+            self.session.close()
+
+class Auth(UserService):
+    def handle_login(self, payload: sc_users.LogIn) -> bool:
+        try:
+            username: Union[str, None] = payload.username
+            email: Union[str, None] = payload.email
+            password: str = payload.password
+            user = ""
+
+            if bool(username):
+                user = super().show_by(username=username)
+            else:
+                user = super().show_by(email=email)
+            
+            if not bool(user):
+                raise HTTPException(status_code=404, detail=f"User not found")
+            
+            hashed_password: str =  user.password_hash
+            if not u_password.util_password.verify_password(
+                raw_password=password, hashed_password=hashed_password
+            ):
+                raise HTTPException(status_code=401, detail="Wrong password!")
+            
+            return True
+    
+        except HTTPException:
+            self.session.rollback()
+            raise
+
+        except Exception as ex:
+            self.session.rollback()
+            raise HTTPException(status_code=500, detail=f"Internal server error: {str(ex)}")
+        
         finally:
             self.session.close()
