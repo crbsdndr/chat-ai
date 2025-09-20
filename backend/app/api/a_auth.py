@@ -27,7 +27,6 @@ def login(payload: sc_users.LogIn):
             status_code=400,
             detail="Please fill in one of the fields (username or email)",
         )
-
     new_auth = s_user.Auth(session=c_database.SessionLocal(), model=c_models.User)
     result = new_auth.handle_login(payload=payload)
 

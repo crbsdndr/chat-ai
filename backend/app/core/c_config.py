@@ -10,4 +10,8 @@ class Database:
     HOST: str = os.getenv("DB_HOST")
     PORT: int = os.getenv("DB_PORT")
 
+class JWTSecurity:
+    SECRET_KEY: str = os.getenv("SECRET_KEY")
+
 database = Database()
+jwt_security = JWTSecurity()
